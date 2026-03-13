@@ -608,7 +608,7 @@ function renderMobileFlow(){
   function mfItem(label,val,color,subs){
     const p=rev>0?(val/rev*100):0;
     const barW=Math.min(100,p*2);
-    const subHtml=(subs||[]).filter(s=>s.amount>0).map(s=>`<span style="display:inline-block;background:rgba(255,255,255,0.05);border-radius:4px;padding:1px 6px;margin:2px 2px 0 0;font-size:9px;color:var(--text3)">↳ ${s.label} : ${fmt(s.amount)}</span>`).join('');
+    const subHtml=(subs||[]).filter(s=>s.amount>0).map(s=>`<span style="display:inline-block;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.08);border-radius:4px;padding:1px 6px;margin:2px 2px 0 0;font-size:9px;color:var(--text2)">↳ ${s.label} : ${fmt(s.amount)}</span>`).join('');
     return `<div class="mf-item">
       <div class="mf-accent" style="background:${color}"></div>
       <div class="mf-bar-bg" style="width:${barW}%;background:${color}"></div>
@@ -716,13 +716,7 @@ function renderSankey(){
     const ty=n.y+n.h/2;
     html+=`<text x="${n.x+NODE_W+LP}" y="${ty-3.5}" text-anchor="start" dominant-baseline="middle" fill="#A0A8B4" font-size="${FONT}" font-family="DM Sans">${n.label}</text>`;
     html+=`<text x="${n.x+NODE_W+LP}" y="${ty+FONT}" text-anchor="start" dominant-baseline="middle" fill="${n.color}" font-size="${FONT}" font-family="DM Sans" font-weight="700">${fmt(n.val)} · ${pct(n.val/rev*100)}</text>`;
-    if(n.detail&&n.detail.length>0&&n.h>34){
-      let dy=n.y+n.h+6;
-      n.detail.filter(s=>s.amount>0).slice(0,3).forEach(s=>{
-        html+=`<text x="${n.x+NODE_W+LP+10}" y="${dy}" dominant-baseline="hanging" fill="#5A6070" font-size="8.5" font-family="DM Sans">↳ ${s.label} : ${fmt(s.amount)}</text>`;
-        dy+=12;
-      });
-    }
+
   });
   svg.innerHTML=html;
   // Hover
@@ -773,11 +767,11 @@ function renderBreakdown(){
   const restant=Math.max(0,totalRevenus()-totalInvest()-totalDepenses());
   body.innerHTML=sections.map(s=>{
     const filtered=s.items.filter(i=>i.amount>0);if(!filtered.length)return'';
-    return`<div style="margin-bottom:14px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:${s.color};margin-bottom:7px">${s.label}</div>${filtered.map(i=>{
-      const subHtml=(i.subs||[]).filter(sub=>sub.amount>0).map(sub=>`<div style="display:flex;justify-content:space-between;padding-left:12px;border-left:2px solid rgba(255,255,255,.06);margin-bottom:3px"><span style="font-size:10px;color:var(--text3)">↳ ${sub.label}</span><div style="display:flex;gap:8px"><span style="font-size:10px;font-weight:600;color:var(--text2)">${fmt(sub.amount)}</span><span style="font-size:9px;color:var(--text3)">${pct(sub.amount/rev*100)}</span></div></div>`).join('');
-      return`<div style="margin-bottom:6px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;gap:6px"><span style="font-size:11px;color:var(--text2);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${i.label}</span><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><div style="width:50px;height:3px;background:var(--bg3);border-radius:2px;overflow:hidden"><div style="height:100%;border-radius:2px;background:${s.color};width:${Math.min(100,i.amount/rev*100*3)}%"></div></div><span style="font-size:11px;font-weight:700;color:var(--text);min-width:50px;text-align:right">${fmt(i.amount)}</span><span style="font-size:10px;color:var(--text3);min-width:32px;text-align:right">${pct(i.amount/rev*100)}</span></div></div>${subHtml}</div>`;
+    return`<div style="margin-bottom:18px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:${s.color};margin-bottom:10px">${s.label}</div>${filtered.map(i=>{
+      const subHtml=(i.subs||[]).filter(sub=>sub.amount>0).map(sub=>`<div style="display:flex;justify-content:space-between;padding:5px 0 5px 14px;border-left:2px solid rgba(255,255,255,.08);margin-bottom:2px"><span style="font-size:12px;color:var(--text2)">↳ ${sub.label}</span><div style="display:flex;gap:10px;flex-shrink:0"><span style="font-size:12px;font-weight:700;color:var(--text)">${fmt(sub.amount)}</span><span style="font-size:11px;color:var(--text3);min-width:36px;text-align:right">${pct(sub.amount/rev*100)}</span></div></div>`).join('');
+      return`<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;gap:8px;padding:4px 0"><span style="font-size:13px;font-weight:600;color:var(--text);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${i.label}</span><div style="display:flex;align-items:center;gap:8px;flex-shrink:0"><div style="width:54px;height:4px;background:var(--bg3);border-radius:2px;overflow:hidden"><div style="height:100%;border-radius:2px;background:${s.color};width:${Math.min(100,i.amount/rev*100*3)}%"></div></div><span style="font-size:14px;font-weight:800;color:var(--text);min-width:58px;text-align:right">${fmt(i.amount)}</span><span style="font-size:11px;color:var(--text3);min-width:36px;text-align:right">${pct(i.amount/rev*100)}</span></div></div>${subHtml}</div>`;
     }).join('')}</div>`;
-  }).join('')+(restant>0?`<div style="border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between"><span style="font-size:11px;font-weight:700;color:${REST_COLOR}">💜 Reste disponible</span><div style="display:flex;gap:8px"><span style="font-size:11px;font-weight:800;color:${REST_COLOR}">${fmt(restant)}</span><span style="font-size:10px;color:var(--text3)">${pct(restant/rev*100)}</span></div></div>`:'');
+  }).join('')+(restant>0?`<div style="border-top:1px solid var(--border);padding-top:12px;display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;font-weight:700;color:${REST_COLOR}">💜 Reste disponible</span><div style="display:flex;gap:10px;align-items:baseline"><span style="font-size:15px;font-weight:900;color:${REST_COLOR}">${fmt(restant)}</span><span style="font-size:11px;color:var(--text3)">${pct(restant/rev*100)}</span></div></div>`:'');
 }
 
 // ─── MODAL ───────────────────────────────────────────────────────────────────
